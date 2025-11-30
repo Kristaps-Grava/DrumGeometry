@@ -35,11 +35,18 @@ class Physics:
   def calculate_torque(self):
     self.calculate_tension()
     self.calculate_moment_of_inertia()
-    self.torque = self.drum_radius()*self.tension + config.hammer_length*9.81*config.hammer_mass*cos(self.theta)
+
+    drum_torque = self.drum_radius()*self.tension
+    hammer_torque = config.hammer_length*9.81*config.hammer_mass*cos(self.theta)
+    self.torque = drum_torque + hammer_torque
 
   def rotation_dynamics(self):
+    """Apply equations of rotation"""
+    # α = τ / (I_h + m*r**2)
     self.angular_acceleration = self.torque/(config.moment_of_inertia+self.mass_moment_of_inertia)
+    # ω = ω + α * dt
     self.angular_velocity += self.angular_acceleration * config.dt
+    # θ = θ - ω * dt
     self.theta -= self.angular_velocity * config.dt
 
   def print_values(self):
