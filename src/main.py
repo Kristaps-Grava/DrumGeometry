@@ -4,6 +4,7 @@
 # Kristaps Grava
 
 
+from visualisation.visualisation import Visualise
 from core.simulation import Simulation
 import numpy as np
 
@@ -16,4 +17,6 @@ for k in np.linspace(-0.03, 0.03, num=100):
   results.append([k, sim.run()])
 
 best_row = max(results, key=lambda row: row[1])
-print(best_row)
+
+visualise = Visualise(best_row[0], 0.1)
+visualise.plot_drum()
