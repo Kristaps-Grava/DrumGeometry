@@ -20,8 +20,13 @@ class Physics:
     self.k = k
     self.b = b
 
+    self.mass_moment_of_inertia = 0
+
   def drum_radius(self):
     return self.k*(self.theta-pi/2)+self.b
+
+  def calculate_moment_of_inertia(self):
+    self.mass_moment_of_inertia = config.weight_mass*self.drum_radius()**2
 
   def calculate_tension(self):
     self.tension = config.weight_mass*9.81 - self.angular_acceleration*config.weight_mass*self.drum_radius()
@@ -29,10 +34,11 @@ class Physics:
 
   def calculate_torque(self):
     self.calculate_tension()
+    self.calculate_moment_of_inertia()
     self.torque = self.drum_radius()*self.tension + config.hammer_length*9.81*config.hammer_mass*cos(self.theta)
 
   def rotation_dynamics(self):
-    self.angular_acceleration = self.torque/config.moment_of_inertia
+    self.angular_acceleration = self.torque/(config.moment_of_inertia+self.mass_moment_of_inertia)
     self.angular_velocity += self.angular_acceleration * config.dt
     self.theta -= self.angular_velocity * config.dt
 
