@@ -10,20 +10,30 @@ import config
 
 
 class Physics:
-  def __init__(self, k, b):
+  def __init__(self, mode, a, r0):
     # Mechanism properties
     self.angular_acceleration = 0
     self.angular_velocity = 0
     self.theta = pi/2
     self.torque = 0
     self.tension = 0
-    self.k = k
-    self.b = b
+    self.mode = mode
+
+    self.a = a
+    self.r0 = r0
 
     self.mass_moment_of_inertia = 0
 
   def drum_radius(self):
-    return self.k*(self.theta-pi/2)+self.b
+    if self.mode == "linear":
+      if self.a*(self.theta-pi/2)+self.r0 > 0:
+        return self.a*(self.theta-pi/2)+self.r0
+      else: return 0
+
+    elif self.mode == "parabolic":
+      if self.a * (self.theta-pi/2)**2 + self.r0 > 0:
+        return self.a * (self.theta-pi/2)**2 + self.r0
+      else: return 0
 
   def calculate_moment_of_inertia(self):
     self.mass_moment_of_inertia = config.weight_mass*self.drum_radius()**2
@@ -48,6 +58,7 @@ class Physics:
     self.angular_velocity += self.angular_acceleration * config.dt
     # θ = θ - ω * dt
     self.theta -= self.angular_velocity * config.dt
+    #print(self.drum_radius())
 
   def print_values(self):
     print(f"torque: {self.torque}")

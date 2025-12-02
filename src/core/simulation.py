@@ -9,8 +9,8 @@ from core.physics import Physics
 from math import pi
 
 class Simulation:
-  def __init__(self, k, b):
-    self.physics = Physics(k, b)
+  def __init__(self, mode, a, r0):
+    self.physics = Physics(mode, a, r0)
 
   def run(self):
     while self.physics.theta > -pi/2:
