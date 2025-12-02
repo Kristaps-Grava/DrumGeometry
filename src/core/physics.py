@@ -10,17 +10,33 @@ import config
 
 
 class Physics:
-  def __init__(self, mode, a, r0):
+  def __init__(self, mode, a):
     # Mechanism properties
+    """class for calculating forces, torques and state of the mecahnism.
+
+    Args:
+      angular_acceleration (float): angular acceleration of the hammer arm and drum
+      angular_velocity (flaot): angular velocity of the hammer arm and drum
+      theta (float): angle of the hammer's arm relative to horizon in rad
+      mode (string): setting for determining drum's radius (linear / parabolic)
+
+      a (float): variable coefficient for drum's radius
+      r0 (float): initial radius of the drum
+
+      time (float): current time of the simulation
+      """
+
+
     self.angular_acceleration = 0
     self.angular_velocity = 0
     self.theta = pi/2
     self.torque = 0
     self.tension = 0
     self.mode = mode
+    self.time = 0
 
     self.a = a
-    self.r0 = r0
+    self.r0 = config.init_drum_radius
 
     self.mass_moment_of_inertia = 0
 
@@ -38,6 +54,13 @@ class Physics:
   def calculate_moment_of_inertia(self):
     self.mass_moment_of_inertia = config.weight_mass*self.drum_radius()**2
 
+  def calculate_collision_force(self):
+    collision_time = 0.1
+    if 0 < self.time < collision_time:
+      self.collision_force = (config.weight_mass * config.init_counterweight_velocity) / collision_time
+
+    else: self.collision_force = 0
+
   def calculate_tension(self):
     self.tension = config.weight_mass*9.81 - self.angular_acceleration*config.weight_mass*self.drum_radius()
     if self.tension < 0: self.tension = 0
@@ -45,8 +68,9 @@ class Physics:
   def calculate_torque(self):
     self.calculate_tension()
     self.calculate_moment_of_inertia()
+    self.calculate_collision_force()
 
-    drum_torque = self.drum_radius()*self.tension
+    drum_torque = self.drum_radius() * (self.tension + self.collision_force)
     hammer_torque = config.hammer_length*9.81*config.hammer_mass*cos(self.theta)
     self.torque = drum_torque + hammer_torque
 

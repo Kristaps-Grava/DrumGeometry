@@ -1,13 +1,14 @@
 import matplotlib.pyplot as plt
-import numpy as np
 from math import pi, cos, sin
+import numpy as np
+import config
 
 
 class Visualise:
-  def __init__(self, mode, a, r0):
+  def __init__(self, mode, a):
     self.mode = mode
     self.a = a
-    self.r0 = r0
+    self.r0 = config.init_drum_radius
     self.theta = [i * (np.pi / 180) for i in range(-90,90)]
 
   def _drum_radius(self, angle):
